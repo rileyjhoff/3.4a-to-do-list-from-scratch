@@ -8,3 +8,14 @@ CREATE TABLE users (
   email VARCHAR NOT NULL UNIQUE,
   password_hash VARCHAR NOT NULL
 );
+
+DROP TABLE IF EXISTS todos;
+
+CREATE TABLE todos (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  user_id INT,
+  task VARCHAR NOT NULL,
+  completed BOOLEAN NOT NULL DEFAULT(false),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+)
