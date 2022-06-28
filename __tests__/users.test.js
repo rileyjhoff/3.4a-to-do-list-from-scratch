@@ -88,8 +88,6 @@ describe('users routes', () => {
     const res3 = await agent.delete('/api/v1/users/sessions');
 
     expect(res3.status).toEqual(204);
-    expect(res3.body.success).toEqual(true);
-    expect(res3.body.message).toEqual('Logged out successfully');
   });
 
   afterAll(() => {
