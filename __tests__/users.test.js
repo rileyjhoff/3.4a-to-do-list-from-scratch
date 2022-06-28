@@ -40,7 +40,7 @@ describe('users routes', () => {
     expect(res2.body.message).toEqual('Signed in successfully');
   });
 
-  it('GET /api/v1/users/me should return the authenticated user', async () => {
+  it('GET /api/v1/users/me should return the user if authenticated', async () => {
     const agent = request.agent(app);
     const res1 = await agent.get('/api/v1/users/me');
 
@@ -62,7 +62,12 @@ describe('users routes', () => {
     const res4 = await agent.get('/api/v1/users/me');
 
     expect(res4.status).toEqual(200);
-    expect(res4.body).toEqual('Signed in successfully');
+    expect(res4.body).toEqual({
+      email: 'test@test.com',
+      id: expect.any(Number),
+      exp: expect.any(Number),
+      iat: expect.any(Number),
+    });
   });
 
   afterAll(() => {
