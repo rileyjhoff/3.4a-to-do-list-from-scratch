@@ -70,6 +70,28 @@ describe('users routes', () => {
     });
   });
 
+  it('DELETE /api/v1/users/sessions should log out the user', async () => {
+    const agent = request.agent(app);
+    const res1 = await agent.post('/api/v1/users/').send(testUser);
+
+    expect(res1.status).toEqual(200);
+    expect(res1.body).toEqual({
+      id: expect.any(Number),
+      email: testUser.email,
+    });
+
+    const res2 = await agent.post('/api/v1/users/sessions').send(testUser);
+
+    expect(res2.status).toEqual(200);
+    expect(res2.body.message).toEqual('Signed in successfully');
+
+    const res3 = await agent.delete('/api/v1/users/sessions');
+
+    expect(res3.status).toEqual(204);
+    expect(res3.body.success).toEqual(true);
+    expect(res3.body.message).toEqual('Logged out successfully');
+  });
+
   afterAll(() => {
     pool.end();
   });
