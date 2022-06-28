@@ -24,13 +24,13 @@ describe('users routes', () => {
   });
 
   it('POST /api/v1/users/sessions should log in a user', async () => {
-    // const res1 = await request(app).post('/api/v1/users/').send(testUser);
+    const res1 = await request(app).post('/api/v1/users/').send(testUser);
 
-    // expect(res1.status).toEqual(200);
-    // expect(res1.body).toEqual({
-    //   id: expect.any(Number),
-    //   email: testUser.email,
-    // });
+    expect(res1.status).toEqual(200);
+    expect(res1.body).toEqual({
+      id: expect.any(Number),
+      email: testUser.email,
+    });
 
     const res2 = await request(app)
       .post('/api/v1/users/sessions')
