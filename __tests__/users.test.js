@@ -13,8 +13,14 @@ describe('users routes', () => {
     return setup(pool);
   });
 
-  it('example test - delete me!', () => {
-    expect(1).toEqual(1);
+  it('POST /api/v1/users should create a user', async () => {
+    const res = await request(app).post('/api/v1/users').send(testUser);
+
+    expect(res.status).toEqual(200);
+    expect(res.body).toEqual({
+      id: expect.any(Number),
+      email: testUser.email,
+    });
   });
 
   afterAll(() => {
