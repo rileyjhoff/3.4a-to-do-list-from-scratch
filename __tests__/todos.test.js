@@ -78,31 +78,44 @@ describe('todos routes', () => {
   });
 
   it('PUT /api/v1/todos/:id should update a todo for the authenticated and authorized user', async () => {
+    const user2 = await UserService.createUser(testUser2);
+
+    const authenticateTestToDo = await ToDo.insert({
+      completed: false,
+      task: 'test',
+      user_id: user2.id,
+    });
+
+    const res1 = await request(app)
+      .put(`/api/v1/todos/${authenticateTestToDo.id}`)
+      .send({ completed: false });
+
+    expect(res1.status).toEqual(401);
+
     const [agent, user1] = await registerAndLogin();
     const user1ToDo = await ToDo.insert({
       completed: false,
       task: 'do something',
       user_id: user1.id,
     });
-    const user2 = await UserService.createUser(testUser2);
     const user2ToDo = await ToDo.insert({
       completed: true,
       task: 'do something else',
       user_id: user2.id,
     });
 
-    const res1 = await agent
+    const res2 = await agent
       .put(`/api/v1/todos/${user2ToDo.id}`)
       .send({ completed: false });
 
-    expect(res1.status).toEqual(403);
+    expect(res2.status).toEqual(403);
 
-    const res2 = await agent
+    const res3 = await agent
       .put(`/api/v1/todos/${user1ToDo.id}`)
       .send({ completed: true });
 
-    expect(res2.status).toEqual(200);
-    expect(res2.body).toEqual({
+    expect(res3.status).toEqual(200);
+    expect(res3.body).toEqual({
       ...user1ToDo,
       completed: true,
     });
