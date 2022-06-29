@@ -121,6 +121,46 @@ describe('todos routes', () => {
     });
   });
 
+  it('DELETE /api/v1/todos/:id should delete a todo for the authenticated and authorized user', async () => {
+    const user2 = await UserService.createUser(testUser2);
+
+    const authenticateTestToDo = await ToDo.insert({
+      completed: false,
+      task: 'test',
+      user_id: user2.id,
+    });
+
+    const res1 = await request(app).delete(
+      `/api/v1/todos/${authenticateTestToDo.id}`
+    );
+
+    expect(res1.status).toEqual(401);
+
+    const [agent, user1] = await registerAndLogin();
+    const user1ToDo = await ToDo.insert({
+      completed: false,
+      task: 'do something',
+      user_id: user1.id,
+    });
+    const user2ToDo = await ToDo.insert({
+      completed: true,
+      task: 'do something else',
+      user_id: user2.id,
+    });
+
+    const res2 = await agent.delete(`/api/v1/todos/${user2ToDo.id}`);
+
+    expect(res2.status).toEqual(403);
+
+    const res3 = await agent.delete(`/api/v1/todos/${user1ToDo.id}`);
+
+    expect(res3.status).toEqual(200);
+
+    const check = await ToDo.getById(user1ToDo.id);
+
+    expect(check).toBeNull();
+  });
+
   afterAll(() => {
     pool.end();
   });
