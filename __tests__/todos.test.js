@@ -30,7 +30,7 @@ describe('todos routes', () => {
     return setup(pool);
   });
 
-  it('GET /api/v1/todos/ returns all todos for the authenticated user', async () => {
+  it('GET /api/v1/todos/ should return all todos for the authenticated user', async () => {
     const res1 = await request(app).get('/api/v1/todos/');
 
     expect(res1.status).toEqual(401);
@@ -53,6 +53,28 @@ describe('todos routes', () => {
     expect(res2.status).toEqual(200);
     expect(res2.body).toEqual(user1ToDo);
     expect(res2.body).not.toContain(user2ToDo);
+  });
+
+  it('POST /api/v1/todos/ should add a new todo for the authenticated user', async () => {
+    const newToDo = {
+      completed: false,
+      task: 'do something',
+    };
+
+    const res1 = await request(app).post('/api/v1/todos/').send(newToDo);
+
+    expect(res1.status).toEqual(401);
+
+    const [agent, user1] = await registerAndLogin();
+
+    const res2 = await agent.post('/api/v1/todos/').send(newToDo);
+
+    expect(res2.status).toEqual(200);
+    expect(res2.body).toEqual({
+      ...newToDo,
+      user_id: user1.id,
+      id: expect.any(Number),
+    });
   });
 
   afterAll(() => {
